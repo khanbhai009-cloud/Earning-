@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap & Earn - Crypto Rewards Bot</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1e272e;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #3d3d3d;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .balance-usd {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .section {
+            background-color: #2d3436;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .btn:hover {
+            background-color: #5649c0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #3d3d3d;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-reward {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .bitcoin-animation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .bitcoin {
+            font-size: 50px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bitcoin:active {
+            transform: scale(1.5);
+        }
+        
+        .wheel-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff7675, #74b9ff, #55efc4, #ffeaa7, 
+                #a29bfe, #fd79a8, #fab1a0, #00cec9
+            );
+            margin: 0 auto 20px;
+            position: relative;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+        
+        .wheel-center {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: var(--dark);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .spins-left {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid var(--primary);
+        }
+        
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .referral-box {
+            background-color: #3d3d3d;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        
+        .withdraw-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background-color: #3d3d3d;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        .ad-container {
+            background-color: #3d3d3d;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .ad-placeholder {
+            width: 100%;
+            height: 100px;
+            background-color: #4d4d4d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">TAP & EARN</div>
+            <div>Crypto Rewards Bot</div>
+        </header>
+        
+        <div class="balance-card">
+            <div>Your Balance</div>
+            <div class="balance-amount">12,450</div>
+            <div class="balance-usd">1.25 USDT</div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" onclick="switchTab('tap')">Tap</div>
+            <div class="tab" onclick="switchTab('tasks')">Tasks</div>
+            <div class="tab" onclick="switchTab('withdraw')">Withdraw</div>
+            <div class="tab" onclick="switchTab('profile')">Profile</div>
+        </div>
+        
+        <!-- Tap Section -->
+        <div id="tap" class="tab-content active">
+            <div class="section">
+                <div class="section-title">
+                    <span>Tap to Earn</span>
+                    <span>+1 per tap</span>
+                </div>
+                <div class="bitcoin-animation">
+                    <div class="bitcoin" onclick="tapBitcoin()">₿</div>
+                </div>
+                <button class="btn btn-secondary" onclick="showAd()">Watch Ad (Get +400)</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">
+                    <span>Spin Wheel</span>
+                    <span id="spins-left">3 spins left today</span>
+                </div>
+                <div class="wheel-container">
+                    <div class="wheel" id="wheel">
+                        <div class="wheel-center"></div>
+                    </div>
+                    <button class="btn btn-warning" onclick="spinWheel()">SPIN (FREE)</button>
+                    <div class="spins-left">Watch an ad to get extra spins</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tasks Section -->
+        <div id="tasks" class="tab-content">
+            <div class="section">
+                <div class="section-title">Complete Tasks</div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Join Telegram Channel</div>
+                        <div style="font-size:12px;opacity:0.7;">Stay updated with our news</div>
+                    </div>
+                    <div class="task-reward">+1000</div>
+                    <button class="btn btn-success" style="width:80px;padding:8px;" onclick="joinChannel()">JOIN</button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Refer Friends</div>
+                        <div style="font-size:12px;opacity:0.7;">Get 250 points per referral</div>
+                    </div>
+                    <div class="task-reward">+250</div>
+                    <button class="btn btn-secondary" style="width:80px;padding:8px;" onclick="showReferral()">SHARE</button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Watch Advertisement</div>
+                        <div style="font-size:12px;opacity:0.7;">Watch a 30s video</div>
+                    </div>
+                    <div class="task-reward">+400</div>
+                    <button class="btn btn-warning" style="width:80px;padding:8px;" onclick="showAd()">WATCH</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdraw Section -->
+        <div id="withdraw" class="tab-content">
+            <div class="section">
+                <div class="section-title">Withdraw USDT</div>
+                
+                <div style="margin-bottom:15px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>Your Balance:</span>
+                        <span>12,450 points (1.25 USDT)</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                        <span>Minimum Withdrawal:</span>
+                        <span>5 USDT (50,000 points)</span>
+                    </div>
+                </div>
+                
+                <input type="number" class="withdraw-input" placeholder="Enter USDT amount (min 5)">
+                <input type="text" class="withdraw-input" placeholder="Your USDT TRC20 Wallet Address">
+                
+                <button class="btn btn-success">WITHDRAW</button>
+                
+                <div style="font-size:12px;text-align:center;margin-top:15px;opacity:0.7;">
+                    Withdrawal processing time: 24-48 hours
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Section -->
+        <div id="profile" class="tab-content">
+            <div class="section">
+                <img src="https://via.placeholder.com/150" class="profile-pic" id="profile-pic">
+                <div class="profile-info">
+                    <div style="font-size:18px;font-weight:bold;" id="username">@username</div>
+                    <div style="opacity:0.7;margin-top:5px;">Joined 15 days ago</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">12,450</div>
+                        <div class="stat-label">Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Referrals</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                </div>
+                
+                <div class="referral-box">
+                    <div style="font-size:12px;opacity:0.7;margin-bottom:5px;">Your Referral Link:</div>
+                    <div>https://t.me/yourbot?start=ref123456</div>
+                    <button class="btn btn-secondary" style="margin-top:10px;padding:8px;" onclick="copyReferral()">COPY LINK</button>
+                </div>
+                
+                <div style="margin-top:20px;">
+                    <div class="section-title">Contact Owner</div>
+                    <button class="btn" onclick="contactOwner()">@OwnerUsername</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Bitcoin tap animation
+        function tapBitcoin() {
+            const bitcoin = document.querySelector('.bitcoin');
+            bitcoin.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                bitcoin.style.transform = 'scale(1)';
+            }, 300);
+            
+            // In a real app, this would send a request to the backend to add points
+            alert("+1 point! Keep tapping!");
+        }
+        
+        // Spin wheel animation
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const spinsLeft = document.getElementById('spins-left');
+            
+            if (spinsLeft.textContent.includes('0')) {
+                alert("No spins left today! Watch an ad to get more spins.");
+                return;
+            }
+            
+            // Random rotation (5-10 full rotations plus segment offset)
+            const segments = 8;
+            const segmentAngle = 360 / segments;
+            const winningSegment = Math.floor(Math.random() * segments);
+            const rotation = 1800 + (winningSegment * segmentAngle);
+            
+            wheel.style.transform = `rotate(${-rotation}deg)`;
+            
+            // Disable button during spin
+            setTimeout(() => {
+                const prizes = [50, 100, 200, 10, 500, 20, 100, 5];
+                alert(`You won ${prizes[winningSegment]} points!`);
+                
+                // Update spins left
+                spinsLeft.textContent = (parseInt(spinsLeft.textContent) - 1 + " spins left today";
+            }, 3000);
+        }
+        
+        // Join channel
+        function joinChannel() {
+            // In a real Telegram bot, this would check if user joined the channel
+            alert("Please join our channel first: https://t.me/lootobhenchoo");
+        }
+        
+        // Show referral
+        function showReferral() {
+            alert("Your referral link: https://t.me/yourbot?start=ref123456\n\nShare this link to earn 250 points per referral!");
+        }
+        
+        // Copy referral
+        function copyReferral() {
+            navigator.clipboard.writeText("https://t.me/yourbot?start=ref123456");
+            alert("Referral link copied to clipboard!");
+        }
+        
+        // Show ad
+        function showAd() {
+            alert("Advertisement would play here\n\nAfter watching, you'll get 400 points!");
+        }
+        
+        // Contact owner
+        function contactOwner() {
+            alert("Contact the owner at @OwnerUsername for support");
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap & Earn - Crypto Rewards Bot</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1e272e;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #3d3d3d;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .balance-usd {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .section {
+            background-color: #2d3436;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .btn:hover {
+            background-color: #5649c0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #3d3d3d;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-reward {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .bitcoin-animation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .bitcoin {
+            font-size: 50px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bitcoin:active {
+            transform: scale(1.5);
+        }
+        
+        .wheel-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff7675, #74b9ff, #55efc4, #ffeaa7, 
+                #a29bfe, #fd79a8, #fab1a0, #00cec9
+            );
+            margin: 0 auto 20px;
+            position: relative;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+        
+        .wheel-center {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: var(--dark);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .spins-left {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid var(--primary);
+        }
+        
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .referral-box {
+            background-color: #3d3d3d;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        
+        .withdraw-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background-color: #3d3d3d;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        .ad-container {
+            background-color: #3d3d3d;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .ad-placeholder {
+            width: 100%;
+            height: 100px;
+            background-color: #4d4d4d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">TAP & EARN</div>
+            <div>Crypto Rewards Bot</div>
+        </header>
+        
+        <div class="balance-card">
+            <div>Your Balance</div>
+            <div class="balance-amount">12,450</div>
+            <div class="balance-usd">1.25 USDT</div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" onclick="switchTab('tap')">Tap</div>
+            <div class="tab" onclick="switchTab('tasks')">Tasks</div>
+            <div class="tab" onclick="switchTab('withdraw')">Withdraw</div>
+            <div class="tab" onclick="switchTab('profile')">Profile</div>
+        </div>
+        
+        <!-- Tap Section -->
+        <div id="tap" class="tab-content active">
+            <div class="section">
+                <div class="section-title">
+                    <span>Tap to Earn</span>
+                    <span>+1 per tap</span>
+                </div>
+                <div class="bitcoin-animation">
+                    <div class="bitcoin" onclick="tapBitcoin()">₿</div>
+                </div>
+                <button class="btn btn-secondary" onclick="showAd()">Watch Ad (Get +400)</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">
+                    <span>Spin Wheel</span>
+                    <span id="spins-left">3 spins left today</span>
+                </div>
+                <div class="wheel-container">
+                    <div class="wheel" id="wheel">
+                        <div class="wheel-center"></div>
+                    </div>
+                    <button class="btn btn-warning" onclick="spinWheel()">SPIN (FREE)</button>
+                    <div class="spins-left">Watch an ad to get extra spins</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tasks Section -->
+        <div id="tasks" class="tab-content">
+            <div class="section">
+                <div class="section-title">Complete Tasks</div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Join Telegram Channel</div>
+                        <div style="font-size:12px;opacity:0.7;">Stay updated with our news</div>
+                    </div>
+                    <div class="task-reward">+1000</div>
+                    <button class="btn btn-success" style="width:80px;padding:8px;" onclick="joinChannel()">JOIN</button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Refer Friends</div>
+                        <div style="font-size:12px;opacity:0.7;">Get 250 points per referral</div>
+                    </div>
+                    <div class="task-reward">+250</div>
+                    <button class="btn btn-secondary" style="width:80px;padding:8px;" onclick="showReferral()">SHARE</button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-info">
+                        <div>Watch Advertisement</div>
+                        <div style="font-size:12px;opacity:0.7;">Watch a 30s video</div>
+                    </div>
+                    <div class="task-reward">+400</div>
+                    <button class="btn btn-warning" style="width:80px;padding:8px;" onclick="showAd()">WATCH</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdraw Section -->
+        <div id="withdraw" class="tab-content">
+            <div class="section">
+                <div class="section-title">Withdraw USDT</div>
+                
+                <div style="margin-bottom:15px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>Your Balance:</span>
+                        <span>12,450 points (1.25 USDT)</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                        <span>Minimum Withdrawal:</span>
+                        <span>5 USDT (50,000 points)</span>
+                    </div>
+                </div>
+                
+                <input type="number" class="withdraw-input" placeholder="Enter USDT amount (min 5)">
+                <input type="text" class="withdraw-input" placeholder="Your USDT TRC20 Wallet Address">
+                
+                <button class="btn btn-success">WITHDRAW</button>
+                
+                <div style="font-size:12px;text-align:center;margin-top:15px;opacity:0.7;">
+                    Withdrawal processing time: 24-48 hours
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Section -->
+        <div id="profile" class="tab-content">
+            <div class="section">
+                <img src="https://via.placeholder.com/150" class="profile-pic" id="profile-pic">
+                <div class="profile-info">
+                    <div style="font-size:18px;font-weight:bold;" id="username">@username</div>
+                    <div style="opacity:0.7;margin-top:5px;">Joined 15 days ago</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">12,450</div>
+                        <div class="stat-label">Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Referrals</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                </div>
+                
+                <div class="referral-box">
+                    <div style="font-size:12px;opacity:0.7;margin-bottom:5px;">Your Referral Link:</div>
+                    <div>https://t.me/yourbot?start=ref123456</div>
+                    <button class="btn btn-secondary" style="margin-top:10px;padding:8px;" onclick="copyReferral()">COPY LINK</button>
+                </div>
+                
+                <div style="margin-top:20px;">
+                    <div class="section-title">Contact Owner</div>
+                    <button class="btn" onclick="contactOwner()">@OwnerUsername</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Bitcoin tap animation
+        function tapBitcoin() {
+            const bitcoin = document.querySelector('.bitcoin');
+            bitcoin.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                bitcoin.style.transform = 'scale(1)';
+            }, 300);
+            
+            // In a real app, this would send a request to the backend to add points
+            alert("+1 point! Keep tapping!");
+        }
+        
+        // Spin wheel animation
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const spinsLeft = document.getElementById('spins-left');
+            
+            if (spinsLeft.textContent.includes('0')) {
+                alert("No spins left today! Watch an ad to get more spins.");
+                return;
+            }
+            
+            // Random rotation (5-10 full rotations plus segment offset)
+            const segments = 8;
+            const segmentAngle = 360 / segments;
+            const winningSegment = Math.floor(Math.random() * segments);
+            const rotation = 1800 + (winningSegment * segmentAngle);
+            
+            wheel.style.transform = `rotate(${-rotation}deg)`;
+            
+            // Disable button during spin
+            setTimeout(() => {
+                const prizes = [50, 100, 200, 10, 500, 20, 100, 5];
+                alert(`You won ${prizes[winningSegment]} points!`);
+                
+                // Update spins left
+                spinsLeft.textContent = (parseInt(spinsLeft.textContent) - 1 + " spins left today";
+            }, 3000);
+        }
+        
+        // Join channel
+        function joinChannel() {
+            // In a real Telegram bot, this would check if user joined the channel
+            alert("Please join our channel first: https://t.me/lootobhenchoo");
+        }
+        
+        // Show referral
+        function showReferral() {
+            alert("Your referral link: https://t.me/yourbot?start=ref123456\n\nShare this link to earn 250 points per referral!");
+        }
+        
+        // Copy referral
+        function copyReferral() {
+            navigator.clipboard.writeText("https://t.me/yourbot?start=ref123456");
+            alert("Referral link copied to clipboard!");
+        }
+        
+        // Show ad
+        function showAd() {
+            alert("Advertisement would play here\n\nAfter watching, you'll get 400 points!");
+        }
+        
+        // Contact owner
+        function contactOwner() {
+            alert("Contact the owner at @OwnerUsername for support");
+        }
+    </script>
+</body>
+</html>
