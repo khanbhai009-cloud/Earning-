@@ -3,149 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tap & Earn - Crypto Rewards Bot</title>
+    <title>Telegram User Data Fix</title>
+    
+    <!-- STEP 1: Yeh Script Head mein hona ZAROORI hai -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <style>
-        :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --dark: #2d3436;
-            --light: #f5f6fa;
-            --success: #00b894;
-            --warning: #fdcb6e;
-            --danger: #d63031;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
         body {
-            background-color: #1e272e;
+            background-color: #1a1a1a; /* Dark Mode */
             color: white;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
+            font-family: sans-serif;
+            text-align: center;
             padding: 20px;
         }
-        
-        header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #3d3d3d;
-            margin-bottom: 20px;
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .balance-card {
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            border-radius: 15px;
+        .card {
+            background: #2d2d2d;
             padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-        
-        .balance-amount {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .balance-usd {
-            opacity: 0.8;
-            font-size: 14px;
-        }
-        
-        .section {
-            background-color: #2d3436;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
-            text-align: center;
-            width: 100%;
-            margin: 5px 0;
-        }
-        
-        .btn:hover {
-            background-color: #5649c0;
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background-color: #3d3d3d;
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-        }
-        
-        .btn-warning {
-            background-color: var(--warning);
-            color: var(--dark);
-        }
-        
-        .tab-container {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #3d3d3d;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom: 3px solid var(--primary);
-            font-weight: bold;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h2 { color: #4ade80; } /* Green color */
+    </style>
+</head>
+<body>
+
+    <h1>🚀 User Data Capture</h1>
+    
+    <!-- Yahan hum data dikhayenge -->
+    <div id="user-card" class="card" style="display: none;">
+        <img id="user-photo" src="" alt="User" style="width: 60px; borderRadius: 50%; display:none;">
+        <h2 id="user-name">Loading...</h2>
+        <p>ID: <span id="user-id">...</span></p>
+        <p>Username: <span id="user-username">...</span></p>
+    </div>
+
+    <div id="error-msg" style="color: red; display: none;">
+        Data nahi mila! Kya aap Telegram mein hain?
+    </div>
+
+    <script>
+        // STEP 2: Window load hone ka wait karein
+        window.onload = function() {
+            // Telegram object ko access karein
+            const tg = window.Telegram.WebApp;
+
+            // App ko expand karein (Full height)
+            tg.expand();
+
+            // STEP 3: "initDataUnsafe" ka use karein (Yehi secret hai!)
+            // Bohot log galti se sirf 'initData' dhoondte hain, par data 'initDataUnsafe' mein hota hai.
+            const user = tg.initDataUnsafe.user;
+
+            if (user) {
+                // Agar user mil gaya, toh HTML update karo
+                document.getElementById('user-card').style.display = 'block';
+                
+                document.getElementById('user-name').innerText = `Hello, ${user.first_name} ${user.last_name || ''}`;
+                document.getElementById('user-id').innerText = user.id;
+                document.getElementById('user-username').innerText = user.username ? `@${user.username}` : 'No Username';
+
+                // Agar photo URL hai (optional)
+                if (user.photo_url) {
+                    document.getElementById('user-photo').src = user.photo_url;
+                    document.getElementById('user-photo').style.display = 'inline-block';
+                }
+
+                // ALERT: Debugging ke liye (Video mein dikhana mat)
+                // alert(JSON.stringify(user)); 
+            } else {
+                // Agar Telegram ke bahar khola hai
+                document.getElementById('error-msg').style.display = 'block';
+                document.getElementById('error-msg').innerText = "Please open this inside Telegram!";
+            }
+        };
+    </script>
+</body>
+</html>
+
             padding: 15px 0;
             border-bottom: 1px solid #3d3d3d;
         }
